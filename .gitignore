@@ -18,3 +18,5 @@ dist/
 
 # Ignore test coverage
 coverage/
+
+/.vscode/

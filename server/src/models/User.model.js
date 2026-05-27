@@ -5,11 +5,12 @@ const UserSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      trim: true,
+      required: [true, "Name is required."],
+      maxlength: [50, "Name cannot exceed 50 characters."],
     },
     email: {
       type: String,
-      required: true,
       unique: true,
       trim: true,
       lowercase: true,
@@ -18,7 +19,6 @@ const UserSchema = new mongoose.Schema(
     },
     username: {
       type: String,
-      required: true,
       unique: true,
       trim: true,
       lowercase: true,
@@ -32,24 +32,13 @@ const UserSchema = new mongoose.Schema(
     bio: {
       type: String,
       default: "",
+      maxlength: [200, "Bio cannot exceed 200 characters."],
     },
     avatar: {
       type: String,
       default: "",
     },
     friends: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    friendRequests: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    friendRequestsSent: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
@@ -77,16 +66,30 @@ const UserSchema = new mongoose.Schema(
       default: "",
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: {
+      transform: function (doc, ret) {
+        delete ret.password;
+        delete ret.__v;
+        return ret;
+      },
+    },
+    toObject: {
+      transform: function (doc, ret) {
+        delete ret.password;
+        delete ret.__v;
+        return ret;
+      },
+    },
+  },
 );
 
-UserSchema.pre("save", async function () {
-  if (!this.isModified("password")) {
-    return;
-  }
+UserSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
 });
 
 UserSchema.methods.comparePassword = async function (password) {
