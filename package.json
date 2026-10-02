@@ -2,6 +2,8 @@
   "name": "chatlingo",
   "version": "1.0.0",
   "description": "MERN chatlingo project",
+  "private": true,
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
@@ -13,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^9.2.1"
+    "concurrently": "^9.2.1",
+    "zod": "^4.4.3"
   }
 }

@@ -1,45 +1,34 @@
 import User from "../models/User.model.js";
 import { z } from "zod";
-import { signupSchema, loginSchema } from "../validators/user.validator.js";
+import {
+  signupSchema,
+  loginSchema,
+  onboardingSchema,
+} from "../validators/user.validator.js";
 import { createToken, setCookies } from "../utils/token.utils.js";
 import { upsertStreamUser } from "../lib/stream.js";
 
 export const signup = async (req, res) => {
   try {
     const validatedData = signupSchema.parse(req.body);
-    const { name, email, username, password, bio, avatar } = validatedData;
+    const { name, email, password } = validatedData;
 
-    const normalizedUsername = username.trim().toLowerCase();
-    const existingUser = await User.findOne({ username: normalizedUsername });
-
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ message: "username already exists" });
-    }
-
-    const normalizedEmail = email.trim().toLowerCase();
-    const existingUserEmail = await User.findOne({ email: normalizedEmail });
-
-    if (existingUserEmail) {
-      return res.status(409).json({ message: "email already exists" });
+      return res.status(409).json({ message: "Account already exists" });
     }
 
     const user = await User.create({
-      name: name.trim(),
-      username: normalizedUsername,
-      email: normalizedEmail,
-      password,
-      bio: bio || "",
-      avatar: avatar || "",
+      name: name,
+      email: email,
+      password: password,
     });
 
     try {
       await upsertStreamUser({
         id: user._id.toString(),
         name: user.name,
-        username: user.username,
         email: user.email,
-        bio: user.bio,
-        avatar: user.avatar,
       });
     } catch (error) {
       console.error("Error upserting Stream user:", user._id, error);
@@ -53,9 +42,7 @@ export const signup = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        username: user.username,
-        bio: user.bio,
-        avatar: user.avatar,
+        email: user.email,
       },
     });
   } catch (error) {
@@ -71,10 +58,10 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const validatedData = loginSchema.parse(req.body);
-    const { username, password } = validatedData;
+    const { email, password } = validatedData;
 
-    const normalizedUsername = username.trim().toLowerCase();
-    const user = await User.findOne({ username: normalizedUsername });
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return res.status(401).json({ message: "invalid credentials" });
     }
@@ -127,6 +114,8 @@ export const logout = (req, res) => {
 
 export const onboarding = async (req, res) => {
   try {
+    const validatedData = onboardingSchema.parse(req.body);
+    const {name, username, bio, avatar, nativeLanguage, learningLanguage, location} = validatedData;
     const { id } = req.user;
     if (!id) {
       return res.status(400).json({ message: "Invalid user ID" });
@@ -137,11 +126,18 @@ export const onboarding = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (user.onboarded) {
+    if (user.isOnboarded) {
       return res.status(400).json({ message: "User already onboarded" });
     }
 
-    user.onboarded = true;
+    user.name = name || user.name;
+    user.username = username || user.username;
+    user.bio = bio || user.bio;
+    user.avatar = avatar || user.avatar;
+    user.nativeLanguage = nativeLanguage || user.nativeLanguage;
+    user.learningLanguage = learningLanguage || user.learningLanguage;
+    user.location = location || user.location;
+    user.isOnboarded = true;
     await user.save();
 
     try {

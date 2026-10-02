@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import chatRoutes from "./routes/chat.routes.js";
 import { rateLimit } from "express-rate-limit";
 import { logger } from "./middlewares/logger.middleware.js";
 import { globalLimiter } from "./middlewares/rateLimiters.middleware.js";
@@ -28,10 +29,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.get("/api/test", (_req, res) => {
-  res.json({
+  res.status(200).json({
     status: "ok",
+    data: [1, 2, 3],
     message: "ChatLingo API is running",
     mongoConnected: mongoose.connection.readyState === 1,
   });

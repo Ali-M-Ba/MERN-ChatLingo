@@ -20,6 +20,7 @@ const UserSchema = new mongoose.Schema(
     username: {
       type: String,
       unique: true,
+      sparse: true,
       trim: true,
       lowercase: true,
       minlength: [3, "Username must be at least 3 characters."],
@@ -27,7 +28,6 @@ const UserSchema = new mongoose.Schema(
         /^[a-zA-Z0-9_]+$/,
         "Username can only contain letters, numbers, and underscores.",
       ],
-      required: [true, "Username is required."],
     },
     bio: {
       type: String,
@@ -85,11 +85,10 @@ const UserSchema = new mongoose.Schema(
   },
 );
 
-UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+UserSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
 UserSchema.methods.comparePassword = async function (password) {

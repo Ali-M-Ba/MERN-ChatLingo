@@ -6,10 +6,29 @@ export const getRecommendedUsers = async (req, res) => {
   try {
     const { id } = req.user;
     const user = await User.findById(id);
+
+    const pendingFriendRequests = await FriendRequest.find({
+      status: "pending",
+      sender: id,
+    });
+
+    const excludedUserIds = new Set([
+      id.toString(),
+      ...user.friends.map((friendId) => friendId.toString()),
+      ...pendingFriendRequests.map((request) => request.recipient.toString()),
+    ]);
+
     const recommendedUsers = await User.find({
-      $and: [{ _id: { $nin: [id, ...user.friends] } }, { isOnboarded: true }],
+      _id: { $nin: Array.from(excludedUserIds) },
+      isOnboarded: true,
     }).select("name username avatar learningLanguage nativeLanguage location");
-    res.status(200).json(recommendedUsers);
+
+    res
+      .status(200)
+      .json({
+        message: "Recommended users fetched successfully",
+        recommendedUsers,
+      });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching recommended users" });
@@ -21,8 +40,11 @@ export const getFriends = async (req, res) => {
     const { id } = req.user;
     const friends = await User.findById(id)
       .select("friends")
-      .populate("friends", "name username avatar learningLanguage nativeLanguage location");
-    res.status(200).json(friends);
+      .populate(
+        "friends",
+        "name username avatar learningLanguage nativeLanguage location",
+      );
+    res.status(200).json({ message: "Friends fetched successfully", friends });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching friends" });
@@ -37,15 +59,22 @@ export const getFriendRequests = async (req, res) => {
       FriendRequest.find({
         recipient: id,
         status: "pending",
-      }).populate("sender", "name username avatar learningLanguage nativeLanguage location"),
+      }).populate(
+        "sender",
+        "name username avatar learningLanguage nativeLanguage location",
+      ),
 
       FriendRequest.find({
         sender: id,
         status: "pending",
-      }).populate("recipient", "name username avatar learningLanguage nativeLanguage location"),
+      }).populate(
+        "recipient",
+        "name username avatar learningLanguage nativeLanguage location",
+      ),
     ]);
 
     res.status(200).json({
+      message: "Friend requests fetched successfully",
       incomingFriendRequests,
       outgoingFriendRequests,
     });
@@ -115,7 +144,9 @@ export const sendFriendRequest = async (req, res) => {
       recipient: recipientId,
     });
 
-    res.status(201).json(friendRequest);
+    res
+      .status(201)
+      .json({ friendRequest, message: "Friend request sent successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({
