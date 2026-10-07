@@ -6,6 +6,7 @@ import {
   sendFriendRequest,
   acceptFriendRequest,
   rejectFriendRequest,
+  cancelFriendRequest,
 } from "../controllers/user.controller.js";
 import { isAuth } from "../middlewares/auth.middleware.js";
 
@@ -17,6 +18,7 @@ router.get("/friends", getFriends);
 router.get("/friend-requests", getFriendRequests);
 
 router.post("/friend-requests/:recipientId", sendFriendRequest);
+router.post("/friend-requests/:recipientId/cancel", cancelFriendRequest);
 router.post("/friend-requests/:friendRequestId/accept", acceptFriendRequest);
 router.post("/friend-requests/:friendRequestId/reject", rejectFriendRequest);
 

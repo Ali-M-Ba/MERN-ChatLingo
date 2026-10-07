@@ -32,6 +32,18 @@ export const sendFriendRequest = async (recipientId) => {
   }
 };
 
+export const cancelFriendRequest = async (recipientId) => {
+  try {
+    const { data } = await axiosInstance.post(
+      `/user/friend-requests/${recipientId}/cancel`
+    );
+    return data;
+  } catch (error) {
+    console.error("Error cancelling friend request:", error);
+    throw error;
+  }
+};
+
 export const getFriendRequests = async () => {
   try {
     const { data } = await axiosInstance.get(`/user/friend-requests`);

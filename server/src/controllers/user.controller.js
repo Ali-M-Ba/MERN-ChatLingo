@@ -23,12 +23,10 @@ export const getRecommendedUsers = async (req, res) => {
       isOnboarded: true,
     }).select("name username avatar learningLanguage nativeLanguage location");
 
-    res
-      .status(200)
-      .json({
-        message: "Recommended users fetched successfully",
-        recommendedUsers,
-      });
+    res.status(200).json({
+      message: "Recommended users fetched successfully",
+      recommendedUsers,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching recommended users" });
@@ -152,6 +150,41 @@ export const sendFriendRequest = async (req, res) => {
     res.status(500).json({
       message: "Error sending friend request",
     });
+  }
+};
+
+export const cancelFriendRequest = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { recipientId } = req.params;
+
+    const friendRequest = await FriendRequest.findOne({
+      sender: id,
+      recipient: recipientId,
+      status: "pending",
+    });
+
+    if (!friendRequest) {
+      return res.status(404).json({ message: "Friend request not found" });
+    }
+
+    if (friendRequest.sender.toString() !== id) {
+      return res.status(403).json({
+        message: "You are not authorized to cancel this friend request",
+      });
+    }
+
+    if (friendRequest.status !== "pending") {
+      return res.status(400).json({
+        message: "This friend request has already been processed",
+      });
+    }
+
+    await FriendRequest.findByIdAndDelete(friendRequest._id);
+    res.status(200).json({ message: "Friend request cancelled" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error cancelling friend request" });
   }
 };
 

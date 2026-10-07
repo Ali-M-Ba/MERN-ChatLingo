@@ -1,31 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UserRoundPlus } from "lucide-react";
-import { sendFriendRequest } from "@/api/user.api";
+import { cancelFriendRequest, sendFriendRequest } from "@/api/user.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { SendFriendRequestButton } from "./SendFriendRequestButton";
+import { CancelFriendRequestButton } from "./CancelFriendRequestButton";
 
-const UserCard = ({ user, isSent }) => {
-  const queryClient = useQueryClient();
-
-  const { mutateAsync, isPending, data, isSuccess, isError, error } =
-    useMutation({
-      mutationFn: () => sendFriendRequest(user._id),
-      onSuccess: ({ friendRequest, message }) => {
-        toast.success(message);
-        queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
-        queryClient.invalidateQueries({ queryKey: ["recommendedUsers"] });
-      },
-      onError: (error) => {
-        toast.error(
-          error.response?.data?.message || "Error sending friend request",
-        );
-        console.error("Error sending friend request:", error);
-      },
-    });
+const UserCard = ({ user }) => {
+  const [requestSent, setRequestSent] = useState(false);
 
   return (
     <Card className="w-full max-w-sm p-3">
@@ -63,14 +49,17 @@ const UserCard = ({ user, isSent }) => {
         </div>
       </div>
 
-      <Button
-        className="mt-3 w-full"
-        onClick={() => mutateAsync()}
-        disabled={isPending || isSent || isSuccess}
-      >
-        <UserRoundPlus />
-        {isSent || isSuccess ? "Request Sent" : "Send A Friend Request"}
-      </Button>
+      {requestSent ? (
+        <CancelFriendRequestButton
+          user={user}
+          onCancelled={() => setRequestSent(false)}
+        />
+      ) : (
+        <SendFriendRequestButton
+          user={user}
+          onSent={() => setRequestSent(true)}
+        />
+      )}
     </Card>
   );
 };

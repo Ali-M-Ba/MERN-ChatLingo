@@ -3,35 +3,13 @@ import { Button } from "../components/ui/button";
 import { UsersRound } from "lucide-react";
 import UserCard from "@/components/UserCard";
 import { useQuery } from "@tanstack/react-query";
-import {
-  getFriendRequests,
-  getFriends,
-  getRecommendedUsers,
-} from "@/api/user.api";
+import { getFriendRequests, getFriends } from "@/api/user.api";
+import { RecommendedUsersList } from "@/components/RecommendedUsersList";
+import { useNavigate } from "react-router-dom";
+import { FriendsList } from "@/components/FriendsList";
 
 const HomePage = () => {
-  const { data: friendRequests } = useQuery({
-    queryKey: ["friendRequests"],
-    queryFn: getFriendRequests,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-
-  const outgoingFriendRequests = friendRequests?.outgoingFriendRequests ?? [];
-
-  const { data: recommendedUsers, isLoading: isRecommendedUsersLoading } =
-    useQuery({
-      queryKey: ["recommendedUsers"],
-      queryFn: getRecommendedUsers,
-      staleTime: 1000 * 60 * 5, // 5 minutes
-    });
-
-  const { data: friends, isLoading: isFriendsLoading } = useQuery({
-    queryKey: ["friends"],
-    queryFn: getFriends,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-
-  const friendsList = friends?.friends ?? [];
+  const Navigate = useNavigate();
 
   return (
     <main className="flex flex-col gap-8">
@@ -43,23 +21,13 @@ const HomePage = () => {
           <h2 id="friends-heading" className="text-2xl font-bold">
             Your friends
           </h2>
-          <Button onClick={() => toast("Feature coming soon!")}>
+          <Button onClick={() => Navigate("/notifications")} size="sm">
             <UsersRound aria-hidden="true" />
             <span>Friend Requests</span>
           </Button>
         </header>
 
-        {isFriendsLoading ? (
-          <p>Loading friends...</p>
-        ) : friendsList.length ? (
-          <div className="grid grid-cols-3 gap-3">
-            {friendsList.map((friend) => (
-              <UserCard key={friend._id} user={friend} />
-            ))}
-          </div>
-        ) : (
-          <p>No friends yet.</p>
-        )}
+        <FriendsList />
       </section>
 
       <section
@@ -74,25 +42,8 @@ const HomePage = () => {
             Discover and connect with new learners!
           </p>
         </header>
+        <RecommendedUsersList />
       </section>
-
-      {isRecommendedUsersLoading ? (
-        <p>Loading learners...</p>
-      ) : recommendedUsers?.length ? (
-        <div className="grid grid-cols-3 gap-3">
-          {recommendedUsers.map((user) => (
-            <UserCard
-              key={user._id}
-              user={user}
-              isSent={outgoingFriendRequests.some(
-                (request) => request.recipient?._id === user._id,
-              )}
-            />
-          ))}
-        </div>
-      ) : (
-        <p>No recommended users at the moment.</p>
-      )}
     </main>
   );
 };
