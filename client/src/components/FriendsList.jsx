@@ -18,7 +18,11 @@ export const FriendsList = () => {
       ) : friendsList.length ? (
         <div className="grid grid-cols-3 gap-3">
           {friendsList.map((friend) => (
-            <UserCard key={friend._id} user={friend} />
+            <UserCard
+              key={friend._id}
+              user={friend}
+              relationshipStatus={friend.relationshipStatus}
+            />
           ))}
         </div>
       ) : (

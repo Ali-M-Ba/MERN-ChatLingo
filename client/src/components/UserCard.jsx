@@ -1,17 +1,34 @@
-import React, { useState } from "react";
 import { Card } from "./ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { UserRoundPlus } from "lucide-react";
-import { cancelFriendRequest, sendFriendRequest } from "@/api/user.api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { getRelationshipStatus } from "@/api/user.api";
+import { useQuery } from "@tanstack/react-query";
 import { SendFriendRequestButton } from "./SendFriendRequestButton";
 import { CancelFriendRequestButton } from "./CancelFriendRequestButton";
+import { AcceptFriendRequestButton } from "./AcceptFriendRequestButton";
+import { Button } from "./ui/button";
 
-const UserCard = ({ user }) => {
-  const [requestSent, setRequestSent] = useState(false);
+const UserCard = ({
+  user,
+  relationshipStatus: initialRelationshipStatus,
+  friendRequestId: initialFriendRequestId,
+}) => {
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
+    queryKey: ["relationshipStatus", user._id],
+    queryFn: () => getRelationshipStatus(user._id),
+    initialData:
+      initialRelationshipStatus === undefined
+        ? undefined
+        : {
+            relationshipStatus: initialRelationshipStatus,
+            friendRequestId: initialFriendRequestId,
+          },
+    staleTime: Infinity,
+  });
+  const relationshipStatus = data?.relationshipStatus;
+  const friendRequestId = data?.friendRequestId;
+  const isRelationshipStatusLoading = isLoading;
+  const isRelationshipStatusError = !data && isError;
 
   return (
     <Card className="w-full max-w-sm p-3">
@@ -49,16 +66,39 @@ const UserCard = ({ user }) => {
         </div>
       </div>
 
-      {requestSent ? (
-        <CancelFriendRequestButton
+      {isRelationshipStatusLoading ? (
+        <Button disabled>Checking relationship...</Button>
+      ) : isRelationshipStatusError ? (
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm text-destructive" role="alert">
+            Unable to load relationship status.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isFetching}
+          >
+            Retry
+          </Button>
+        </div>
+      ) : relationshipStatus === "outgoing_pending" ? (
+        <CancelFriendRequestButton user={user} />
+      ) : relationshipStatus === "none" ? (
+        <SendFriendRequestButton user={user} />
+      ) : relationshipStatus === "incoming_pending" ? (
+        <AcceptFriendRequestButton
           user={user}
-          onCancelled={() => setRequestSent(false)}
+          friendRequestId={friendRequestId}
         />
+      ) : relationshipStatus === "friends" ? (
+        <Button variant="outline" disabled>
+          Friends
+        </Button>
       ) : (
-        <SendFriendRequestButton
-          user={user}
-          onSent={() => setRequestSent(true)}
-        />
+        <p className="text-sm text-destructive" role="alert">
+          Unable to determine relationship status.
+        </p>
       )}
     </Card>
   );

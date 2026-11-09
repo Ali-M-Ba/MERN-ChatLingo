@@ -11,6 +11,9 @@ const LogoutButton = () => {
   const { mutate, isPending } = useMutation({
     mutationFn: logoutUser,
     onSuccess: () => {
+      queryClient.removeQueries({
+        predicate: (query) => query.queryKey[0] !== "userAuth",
+      });
       queryClient.setQueryData(["userAuth"], null);
       navigate("/login");
     },

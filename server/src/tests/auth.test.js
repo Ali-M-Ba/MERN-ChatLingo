@@ -186,9 +186,35 @@ describe("Auth routes", () => {
         isOnboarded: true,
       });
 
+      const dave = await User.create({
+        name: "Dave",
+        email: "dave@example.com",
+        username: "dave123",
+        password: "password123",
+        isOnboarded: true,
+      });
+
+      const eve = await User.create({
+        name: "Eve",
+        email: "eve@example.com",
+        username: "eve123",
+        password: "password123",
+        isOnboarded: true,
+      });
+
+      await User.findByIdAndUpdate(alice._id, {
+        $addToSet: { friends: eve._id },
+      });
+
       await FriendRequest.create({
         sender: alice._id,
         recipient: bob._id,
+        status: "pending",
+      });
+
+      const incomingRequest = await FriendRequest.create({
+        sender: dave._id,
+        recipient: alice._id,
         status: "pending",
       });
 
@@ -205,15 +231,32 @@ describe("Auth routes", () => {
 
       expect(response.status).toBe(200);
       expect(
-        response.body.some(
+        response.body.recommendedUsers.some(
           (user) => user._id.toString() === bob._id.toString(),
         ),
       ).toBe(false);
       expect(
-        response.body.some(
-          (user) => user._id.toString() === carol._id.toString(),
+        response.body.recommendedUsers.some(
+          (user) => user._id.toString() === eve._id.toString(),
         ),
-      ).toBe(true);
+      ).toBe(false);
+
+      const recommendedCarol = response.body.recommendedUsers.find(
+        (user) => user._id.toString() === carol._id.toString(),
+      );
+      expect(recommendedCarol).toMatchObject({
+        relationshipStatus: "none",
+      });
+      expect(recommendedCarol.friendRequestId).toBeUndefined();
+
+      const recommendedDave = response.body.recommendedUsers.find(
+        (user) => user._id.toString() === dave._id.toString(),
+      );
+      expect(recommendedDave).toMatchObject({
+        relationshipStatus: "incoming_pending",
+        friendRequestId: incomingRequest._id.toString(),
+      });
+      expect(recommendedDave.friendRequest).toBeUndefined();
     });
   });
 });

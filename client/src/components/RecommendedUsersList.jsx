@@ -3,10 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import UserCard from "./UserCard";
 
 export const RecommendedUsersList = () => {
-  const {
-    data,
-    isLoading: isRecommendedUsersLoading,
-  } = useQuery({
+  const { data, isLoading: isRecommendedUsersLoading } = useQuery({
     queryKey: ["recommendedUsers"],
     queryFn: getRecommendedUsers,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -23,6 +20,8 @@ export const RecommendedUsersList = () => {
             <UserCard
               key={user._id}
               user={user}
+              relationshipStatus={user.relationshipStatus}
+              friendRequestId={user.friendRequestId}
             />
           ))}
         </div>

@@ -1,17 +1,22 @@
-import { useMutation } from "@tanstack/react-query";
-import React from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "./ui/button";
 import { sendFriendRequest } from "@/api/user.api";
 import toast from "react-hot-toast";
 
-export const SendFriendRequestButton = ({ user, onSent }) => {
+export const SendFriendRequestButton = ({ user }) => {
+  const queryClient = useQueryClient();
+
   const {
-    mutateAsync: sendFriendRequestMutation,
+    mutate: sendFriendRequestMutation,
     isPending: isSendingFriendRequest,
-    isSuccess: isFriendRequestSent,
   } = useMutation({
     mutationFn: () => sendFriendRequest(user._id),
-    onSuccess: () => onSent(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["relationshipStatus", user._id],
+      });
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+    },
     onError: (error) => {
       toast.error(
         error.response?.data?.message || "Error sending friend request",
@@ -21,7 +26,6 @@ export const SendFriendRequestButton = ({ user, onSent }) => {
   });
   return (
     <Button
-      variant=""
       onClick={() => sendFriendRequestMutation()}
       disabled={isSendingFriendRequest}
     >

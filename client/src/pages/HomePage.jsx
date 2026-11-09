@@ -1,9 +1,5 @@
-import toast from "react-hot-toast";
 import { Button } from "../components/ui/button";
 import { UsersRound } from "lucide-react";
-import UserCard from "@/components/UserCard";
-import { useQuery } from "@tanstack/react-query";
-import { getFriendRequests, getFriends } from "@/api/user.api";
 import { RecommendedUsersList } from "@/components/RecommendedUsersList";
 import { useNavigate } from "react-router-dom";
 import { FriendsList } from "@/components/FriendsList";

@@ -1,17 +1,23 @@
 import { cancelFriendRequest } from "@/api/user.api";
-import { useMutation } from "@tanstack/react-query";
-import React from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "./ui/button";
 import toast from "react-hot-toast";
 
-export const CancelFriendRequestButton = ({ user, onCancelled }) => {
+export const CancelFriendRequestButton = ({ user }) => {
+  const queryClient = useQueryClient();
+
   const {
-    mutateAsync: cancelFriendRequestMutation,
+    mutate: cancelFriendRequestMutation,
     isPending: isCancellingFriendRequest,
-    isSuccess: isFriendRequestCancelled,
   } = useMutation({
     mutationFn: () => cancelFriendRequest(user._id),
-    onSuccess: () => onCancelled(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["relationshipStatus", user._id],
+      });
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["recommendedUsers"] });
+    },
     onError: (error) => {
       toast.error(
         error.response?.data?.message || "Error cancelling friend request",

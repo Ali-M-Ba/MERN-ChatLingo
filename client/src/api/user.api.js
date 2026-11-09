@@ -35,11 +35,35 @@ export const sendFriendRequest = async (recipientId) => {
 export const cancelFriendRequest = async (recipientId) => {
   try {
     const { data } = await axiosInstance.post(
-      `/user/friend-requests/${recipientId}/cancel`
+      `/user/friend-requests/${recipientId}/cancel`,
     );
     return data;
   } catch (error) {
     console.error("Error cancelling friend request:", error);
+    throw error;
+  }
+};
+
+export const acceptFriendRequest = async (friendRequestId) => {
+  try {
+    const { data } = await axiosInstance.post(
+      `/user/friend-requests/${friendRequestId}/accept`,
+    );
+    return data;
+  } catch (error) {
+    console.error("Error accepting friend request:", error);
+    throw error;
+  }
+};
+
+export const rejectFriendRequest = async (friendRequestId) => {
+  try {
+    const { data } = await axiosInstance.post(
+      `/user/friend-requests/${friendRequestId}/reject`,
+    );
+    return data;
+  } catch (error) {
+    console.error("Error rejecting friend request:", error);
     throw error;
   }
 };
@@ -50,6 +74,16 @@ export const getFriendRequests = async () => {
     return data;
   } catch (error) {
     console.error("Error fetching friend requests:", error);
+    throw error;
+  }
+};
+
+export const getRelationshipStatus = async (userId) => {
+  try {
+    const { data } = await axiosInstance.get(`/user/relationship/${userId}`);
+    return data;
+  } catch (error) {
+    console.error("Error fetching relationship status:", error);
     throw error;
   }
 };

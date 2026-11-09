@@ -7,6 +7,7 @@ import {
   acceptFriendRequest,
   rejectFriendRequest,
   cancelFriendRequest,
+  getRelationshipStatus,
 } from "../controllers/user.controller.js";
 import { isAuth } from "../middlewares/auth.middleware.js";
 
@@ -16,6 +17,7 @@ router.use(isAuth); // Apply authentication middleware to all routes in this rou
 router.get("/recommended", getRecommendedUsers);
 router.get("/friends", getFriends);
 router.get("/friend-requests", getFriendRequests);
+router.get("/relationship/:userId", getRelationshipStatus);
 
 router.post("/friend-requests/:recipientId", sendFriendRequest);
 router.post("/friend-requests/:recipientId/cancel", cancelFriendRequest);
