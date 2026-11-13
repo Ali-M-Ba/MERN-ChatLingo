@@ -27,7 +27,9 @@ function AppRoutes({ user, isAuthenticated }) {
 
   return (
     <Routes>
-      <Route element={<AppLayout isAuthenticated={isAuthenticated} user={user} />}>
+      <Route
+        element={<AppLayout isAuthenticated={isAuthenticated} user={user} />}
+      >
         {/* Public routes */}
         <Route element={<PublicRoute isAuthenticated={isAuthenticated} />}>
           <Route path="/login" element={<LoginPage />} />
@@ -52,8 +54,8 @@ function AppRoutes({ user, isAuthenticated }) {
           <Route element={<OnboardedRoute user={user} />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/call" element={<CallPage />} />
+            <Route path="/chat/:id" element={<ChatPage user={user} />} />
+            <Route path="/call/:id" element={<CallPage user={user} />} />
           </Route>
         </Route>
 

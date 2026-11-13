@@ -7,7 +7,7 @@ function App() {
   const { user, isAuthenticated, isLoading, error } = useUserAuth();
 
   if (isLoading) {
-    return <PageLoader />;
+    return <PageLoader message="Loading your account..." />;
   }
 
   if (error && !isAuthenticated) {

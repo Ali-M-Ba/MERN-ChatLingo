@@ -7,6 +7,7 @@ import { SendFriendRequestButton } from "./SendFriendRequestButton";
 import { CancelFriendRequestButton } from "./CancelFriendRequestButton";
 import { AcceptFriendRequestButton } from "./AcceptFriendRequestButton";
 import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 const UserCard = ({
   user,
@@ -29,6 +30,7 @@ const UserCard = ({
   const friendRequestId = data?.friendRequestId;
   const isRelationshipStatusLoading = isLoading;
   const isRelationshipStatusError = !data && isError;
+  const navigate = useNavigate();
 
   return (
     <Card className="w-full max-w-sm p-3">
@@ -92,9 +94,14 @@ const UserCard = ({
           friendRequestId={friendRequestId}
         />
       ) : relationshipStatus === "friends" ? (
-        <Button variant="outline" disabled>
-          Friends
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button onClick={() => navigate(`/chat/${user._id}`)} size="sm">
+            Message
+          </Button>
+          <Button onClick={() => navigate(`/call/${user._id}`)} size="sm">
+            call
+          </Button>
+        </div>
       ) : (
         <p className="text-sm text-destructive" role="alert">
           Unable to determine relationship status.

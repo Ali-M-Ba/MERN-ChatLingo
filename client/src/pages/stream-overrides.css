@@ -1,0 +1,166 @@
+.chatlingo-chat-page {
+  display: flex;
+  width: 100%;
+  height: min(72dvh, 56rem);
+  min-height: min(28rem, calc(100dvh - 10rem));
+  align-items: stretch;
+  justify-content: flex-start;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--card-foreground);
+}
+
+.chatlingo-chat-page > .str-chat {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  font-family: var(--font-sans);
+}
+
+.chatlingo-chat-page .str-chat__channel {
+  height: 100%;
+  min-height: 0;
+}
+
+.chatlingo-chat-page .str-chat__main-panel-inner {
+  height: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
+.chatlingo-chat-page
+  .str-chat__channel
+  > .str-chat__message-composer-container {
+  flex: 0 0 auto;
+}
+
+.chatlingo-chat-page .str-chat {
+  --str-chat__background-core-app: var(--card);
+  --str-chat__background-core-elevation-0: var(--card);
+  --str-chat__background-core-elevation-1: var(--card);
+  --str-chat__background-core-elevation-2: var(--popover);
+  --str-chat__background-core-elevation-3: var(--popover);
+  --str-chat__background-core-surface-default: var(--secondary);
+  --str-chat__background-core-surface-subtle: var(--muted);
+  --str-chat__background-core-surface-card: var(--card);
+  --str-chat__background-core-surface-strong: var(--muted);
+  --str-chat__background-core-inverse: var(--foreground);
+  --str-chat__background-core-on-accent: var(--primary-foreground);
+  --str-chat__background-utility-disabled: var(--muted);
+  --str-chat__border-core-default: var(--border);
+  --str-chat__border-core-subtle: var(--border);
+  --str-chat__border-core-strong: var(--border);
+  --str-chat__border-utility-focused: var(--ring);
+  --str-chat__text-primary: var(--foreground);
+  --str-chat__text-secondary: var(--muted-foreground);
+  --str-chat__text-tertiary: var(--muted-foreground);
+  --str-chat__text-on-inverse: var(--background);
+  --str-chat__text-on-accent: var(--primary-foreground);
+  --str-chat__text-link: var(--primary);
+  --str-chat__accent-primary: var(--primary);
+  --str-chat__accent-error: var(--destructive);
+  --str-chat__brand-300: var(--primary);
+  --str-chat__brand-400: var(--primary);
+  --str-chat__brand-500: var(--primary);
+  --str-chat__chat-bg-outgoing: var(--primary);
+  --str-chat__chat-text-outgoing: var(--primary-foreground);
+  --str-chat__chat-border-outgoing: var(--primary);
+  --str-chat__chat-bg-incoming: var(--secondary);
+  --str-chat__chat-text-incoming: var(--secondary-foreground);
+  --str-chat__button-primary-bg: var(--primary);
+  --str-chat__button-primary-text: var(--primary-foreground);
+  --str-chat__button-secondary-bg: var(--secondary);
+  --str-chat__button-secondary-text: var(--secondary-foreground);
+  --str-chat__input-text-default: var(--foreground);
+  --str-chat__input-text-placeholder: var(--muted-foreground);
+  --str-chat__radius-sm: calc(var(--radius) * 0.6);
+  --str-chat__radius-md: calc(var(--radius) * 0.8);
+  --str-chat__radius-lg: var(--radius);
+  --str-chat__radius-xl: calc(var(--radius) * 1.4);
+  --str-chat__radius-2xl: calc(var(--radius) * 1.8);
+  --str-chat__radius-3xl: calc(var(--radius) * 2.2);
+  --str-chat__button-radius-lg: var(--radius);
+  --str-chat__button-radius-md: var(--radius);
+  --str-chat__button-radius-sm: var(--radius);
+}
+
+.chatlingo-chat-page .str-chat__channel-header,
+.chatlingo-chat-page .str-chat__message-composer-container {
+  background: var(--card);
+}
+
+.chatlingo-chat-page .str-chat__message-composer-compose-area {
+  border-color: var(--input);
+  border-radius: var(--radius);
+  background: var(--background);
+}
+
+.chatlingo-chat-page .str-chat__message-composer-compose-area:focus-within {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 25%, transparent);
+}
+
+.chatlingo-call-page .str-video {
+  --str-video__primary-color: var(--primary);
+  --str-video__secondary-color: var(--muted-foreground);
+  --str-video__text-color1: var(--foreground);
+  --str-video__text-color2: var(--muted-foreground);
+  --str-video__text-color3: var(--muted-foreground);
+  --str-video__text-color4: var(--foreground);
+  --str-video__icon-default: var(--secondary-foreground);
+  --str-video__icon-hover: var(--secondary-foreground);
+  --str-video__icon-pressed: var(--secondary-foreground);
+  --str-video__icon-active: var(--primary-foreground);
+  --str-video__background-color0: var(--background);
+  --str-video__background-color1: var(--card);
+  --str-video__background-color2: var(--muted);
+  --str-video__background-color3: var(--background);
+  --str-video__background-color4: var(--background);
+  --str-video__background-color5: var(--popover);
+  --str-video__background-color6: var(--muted-foreground);
+  --str-video__background-color7: var(--secondary);
+  --str-video__button-default-base: var(--secondary);
+  --str-video__button-default-hover: var(--accent);
+  --str-video__button-default-pressed: var(--muted);
+  --str-video__button-default-active: var(--accent);
+  --str-video__button-default-disabled: var(--muted);
+  --str-video__button-primary-base: var(--secondary);
+  --str-video__button-primary-hover: var(--accent);
+  --str-video__button-primary-pressed: var(--muted);
+  --str-video__button-primary-active: var(--primary);
+  --str-video__button-secondary-base: var(--secondary);
+  --str-video__button-secondary-hover: var(--accent);
+  --str-video__button-secondary-pressed: var(--muted);
+  --str-video__button-secondary-active: var(--accent);
+  --str-video__button-tertiary-base: var(--destructive);
+  --str-video__button-tertiary-hover: color-mix(
+    in oklch,
+    var(--destructive) 85%,
+    var(--foreground)
+  );
+  --str-video__button-tertiary-pressed: var(--destructive);
+  --str-video__button-tertiary-active: var(--destructive);
+  --str-video__border-radius-xxs: calc(var(--radius) * 0.4);
+  --str-video__border-radius-xs: calc(var(--radius) * 0.6);
+  --str-video__border-radius-sm: calc(var(--radius) * 0.8);
+  --str-video__border-radius-md: var(--radius);
+  --str-video__border-radius-lg: calc(var(--radius) * 1.4);
+  font-family: var(--font-sans);
+}
+
+.chatlingo-call-page .str-video__call-controls__button {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: none;
+}
+
+.chatlingo-call-page .str-video__call-controls__button--variant-danger {
+  border-color: var(--destructive);
+}
+
+.chatlingo-call-page .str-video__participant-view {
+  border-radius: var(--radius);
+}
